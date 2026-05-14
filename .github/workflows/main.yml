@@ -1,0 +1,29 @@
+name: Auto Commit
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Berjalan setiap jam 12 malam UTC
+  workflow_dispatch: # TAMBAHAN BARU: Agar bisa di-klik/dijalankan manual sekarang
+
+permissions:
+  contents: write # TAMBAHAN BARU: Izin agar bot boleh melakukan git push
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update file dummy
+        run: |
+          echo "Commit pada: $(date)" >> dummy.txt
+          
+      - name: Commit dan Push
+        run: |
+          git config --global user.name "GitHub Auto Bot"
+          git config --global user.email "bot@github.com"
+          git add dummy.txt
+          git commit -m "Auto commit harian"
+          git push
